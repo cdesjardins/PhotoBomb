@@ -1,0 +1,22 @@
+﻿<Window x:Class="PhotoBomb.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:PhotoBomb"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="350" Width="525"
+        SizeChanged="onResize">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="150"/>
+        </Grid.RowDefinitions>
+        <Image Name="imageCtrl" Grid.Row="0" Grid.Column="0" PreviewMouseMove="onImageMouseMove"/>
+        <TextBox Name="outLog" IsReadOnly="True" Grid.Row="1" Grid.Column="0" ScrollViewer.VerticalScrollBarVisibility="Auto" Focusable="False"/>
+        <Line Name="lineTop" Visibility="Hidden" Stroke="Red" StrokeThickness="1" />
+        <Line Name="lineLeft" Visibility="Hidden" Stroke="Red" StrokeThickness="1" />
+        <Line Name="lineRight" Visibility="Hidden" Stroke="Red" StrokeThickness="1" />
+        <Line Name="lineBottom" Visibility="Hidden" Stroke="Red" StrokeThickness="1" />
+    </Grid>
+</Window>
