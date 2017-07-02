@@ -423,7 +423,7 @@ namespace PhotoBomb
             double angle;
             String rotate = s.Text;
             rotate = rotate.Insert(s.CaretIndex, e.Text);
-            e.Handled = !double.TryParse(rotate, out angle);
+            e.Handled = !((double.TryParse(rotate, out angle)) || rotate.Equals("-") || rotate.Equals(".") || rotate.Equals("-."));
         }
 
         public MainWindow()
