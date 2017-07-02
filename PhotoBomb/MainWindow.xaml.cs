@@ -204,14 +204,20 @@ namespace PhotoBomb
         private void onRotateKey(KeyEventArgs e)
         {
             double angle;
-            double.TryParse(rotateBox.Text, out angle);
-            RotateTransformation rt = new RotateTransformation(angle);
-            ImageSource imgSrc = rt.apply(imageCtrl.Source as BitmapSource);
-            if (imgSrc != null)
+            if (double.TryParse(rotateBox.Text, out angle) == true)
             {
-                _transformations.Enqueue(rt);
-                imageCtrl.Source = imgSrc;
-                log("Image rotated");
+                RotateTransformation rt = new RotateTransformation(angle);
+                ImageSource imgSrc = rt.apply(imageCtrl.Source as BitmapSource);
+                if (imgSrc != null)
+                {
+                    _transformations.Enqueue(rt);
+                    imageCtrl.Source = imgSrc;
+                    log("Image rotated");
+                }
+            }
+            else
+            {
+                log("No rotation angle configured");
             }
         }
 

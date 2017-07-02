@@ -57,8 +57,8 @@ namespace PhotoBomb
         {
             Canvas surface = new Canvas();
 
-            surface.Width = bitmapImage.PixelWidth + 100;
-            surface.Height = bitmapImage.PixelHeight + 100;
+            surface.Width = bitmapImage.PixelWidth;
+            surface.Height = bitmapImage.PixelHeight;
             surface.Background = new ImageBrush(bitmapImage);
 
             Matrix matrix = new Matrix();
