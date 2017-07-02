@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Security;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -202,7 +203,9 @@ namespace PhotoBomb
 
         private void onRotateKey(KeyEventArgs e)
         {
-            RotateTransformation rt = new RotateTransformation(45.0d);
+            double angle;
+            double.TryParse(rotateBox.Text, out angle);
+            RotateTransformation rt = new RotateTransformation(angle);
             ImageSource imgSrc = rt.apply(imageCtrl.Source as BitmapSource);
             if (imgSrc != null)
             {
@@ -283,10 +286,9 @@ namespace PhotoBomb
             log("Delete key - Delete photo");
             log("C - Crop to selection");
             log("r - Rotate clockwise");
-            log("Shift+R - Rotate anti-clockwise");
-            log("Ctrl+R - Reload all images from dir");
-            log("Ctrl+S - Save photo (PNG)");
-            log("Ctrl+Z - Undo all changes");
+            log("Shift+R - Reload all images from dir");
+            log("S - Save photo (PNG)");
+            log("U - Undo all changes");
             log("Q - Quit application");
             log("H - Help\n\n");
         }
@@ -308,28 +310,26 @@ namespace PhotoBomb
                         onCropKey();
                         break;
                     case Key.R:
-                        onRotateKey(e);
+                        if ((Keyboard.Modifiers & ModifierKeys.Shift) == 0)
+                        {
+                            onRotateKey(e);
+                        }
+                        else
+                        {
+                            onReloadKey();
+                        }
                         break;
                     case Key.Q:
                         this.Close();
                         break;
-                    case Key.H:
-                        onHelpKey();
-                        break;
-                }
-            }
-            else if ((Keyboard.Modifiers & (ModifierKeys.Control | ModifierKeys.Alt)) == ModifierKeys.Control)
-            {
-                switch (e.Key)
-                {
                     case Key.S:
                         onSaveKey();
                         break;
-                    case Key.R:
-                        onReloadKey();
-                        break;
-                    case Key.Z:
+                    case Key.U:
                         onUndoKey();
+                        break;
+                    case Key.H:
+                        onHelpKey();
                         break;
                 }
             }
@@ -409,6 +409,15 @@ namespace PhotoBomb
                 outLog.AppendText("\n");
             }
             outLog.ScrollToEnd();
+        }
+
+        private void NumberValidationTextBox(object sender, TextCompositionEventArgs e)
+        {
+            TextBox s = sender as TextBox;
+            double angle;
+            String rotate = s.Text;
+            rotate = rotate.Insert(s.CaretIndex, e.Text);
+            e.Handled = !double.TryParse(rotate, out angle);
         }
 
         public MainWindow()

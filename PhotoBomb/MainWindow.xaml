@@ -10,10 +10,19 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="150"/>
         </Grid.RowDefinitions>
         <Image Name="imageCtrl" Grid.Row="0" Grid.Column="0" PreviewMouseMove="onImageMouseMove"/>
-        <TextBox Name="outLog" IsReadOnly="True" Grid.Row="1" Grid.Column="0" ScrollViewer.VerticalScrollBarVisibility="Auto" Focusable="False"/>
+        <Grid Grid.Row="1" Grid.Column="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Label Content="Roate: " Grid.Row="0" Grid.Column="0" />
+            <TextBox Name="rotateBox" Grid.Row="0" Grid.Column="1" PreviewTextInput="NumberValidationTextBox"/>
+        </Grid>
+        <TextBox Name="outLog" IsReadOnly="True" Grid.Row="2" Grid.Column="0" ScrollViewer.VerticalScrollBarVisibility="Auto" Focusable="False"/>
         <Line Name="lineTop" Visibility="Hidden" Stroke="Red" StrokeThickness="1" />
         <Line Name="lineLeft" Visibility="Hidden" Stroke="Red" StrokeThickness="1" />
         <Line Name="lineRight" Visibility="Hidden" Stroke="Red" StrokeThickness="1" />
