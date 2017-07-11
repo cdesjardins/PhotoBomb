@@ -31,7 +31,7 @@ namespace PhotoBomb
         private Boolean _mouseDown = false;
         private Point _selectTopLeft = new Point();
         private Point _selectBottomRight = new Point();
-        private Queue<PhotoTransform> _transformations = new Queue<PhotoTransform>();
+        private List<PhotoTransform> _transformations = new List<PhotoTransform>();
 
         public static BitmapImage getImage(String filename)
         {
@@ -58,7 +58,73 @@ namespace PhotoBomb
         {
             if ((_images != null) && (_images.Count > 0))
             {
-                imageCtrl.Source = applyAllTransforms();
+                imageCtrl.Source = applyAllTransforms(PhotoTransformQuality.LOW);
+            }
+        }
+
+        // Rotate is not cumulative, quality degrades too much
+        private void onRotateKey(KeyEventArgs e)
+        {
+            double angle;
+            if (double.TryParse(rotateBox.Text, out angle) == true)
+            {
+                RotateTransformation rt = new RotateTransformation(angle);
+                ImageSource imgSrc = rt.apply(getImage(_images[_imageIndex]), PhotoTransformQuality.LOW);
+                if (imgSrc != null)
+                {
+                    foreach (PhotoTransform p in _transformations)
+                    {
+                        if (p is RotateTransformation)
+                        {
+                            _transformations.Remove(p);
+                            break;
+                        }
+                    }
+                    _transformations.Add(rt);
+                    imageCtrl.Source = imgSrc;
+                    log("Image rotated");
+                }
+            }
+            else
+            {
+                log("No rotation angle configured");
+            }
+        }
+
+        BitmapSource applyAllTransforms(PhotoTransformQuality quality)
+        {
+            BitmapSource bi = getImage(_images[_imageIndex]);
+
+            foreach (PhotoTransform t in _transformations)
+            {
+                bi = t.apply(bi, quality);
+            }
+            return bi;
+        }
+
+        private void onCropKey()
+        {
+            if (lineTop.IsVisible == true)
+            {
+                Point p = imageCtrl.TransformToAncestor(Application.Current.MainWindow).Transform(new Point(0, 0));
+                Point selectTopLeft = _selectTopLeft;
+                Point selectBottomRight = _selectBottomRight;
+
+                selectTopLeft.Offset(-p.X, -p.Y);
+                selectBottomRight.Offset(-p.X, -p.Y);
+
+                CropTransformation ct = new CropTransformation(selectTopLeft, selectBottomRight, imageCtrl.ActualHeight, imageCtrl.ActualWidth);
+                ImageSource imgSrc = ct.apply(imageCtrl.Source as BitmapSource, PhotoTransformQuality.LOW);
+                if (imgSrc != null)
+                {
+                    _transformations.Add(ct);
+                    imageCtrl.Source = imgSrc;
+                    log("Image cropped");
+                }
+            }
+            else
+            {
+                log("Unable to crop, no selection");
             }
         }
 
@@ -175,52 +241,6 @@ namespace PhotoBomb
             }
         }
 
-        private void onCropKey()
-        {
-            if (lineTop.IsVisible == true)
-            {
-                Point p = imageCtrl.TransformToAncestor(Application.Current.MainWindow).Transform(new Point(0, 0));
-                Point selectTopLeft = _selectTopLeft;
-                Point selectBottomRight = _selectBottomRight;
-
-                selectTopLeft.Offset(-p.X, -p.Y);
-                selectBottomRight.Offset(-p.X, -p.Y);
-
-                CropTransformation ct = new CropTransformation(selectTopLeft, selectBottomRight, imageCtrl.ActualHeight, imageCtrl.ActualWidth);
-                ImageSource imgSrc = ct.apply(imageCtrl.Source as BitmapSource);
-                if (imgSrc != null)
-                {
-                    _transformations.Enqueue(ct);
-                    imageCtrl.Source = imgSrc;
-                    log("Image cropped");
-                }
-            }
-            else
-            {
-                log("Unable to crop, no selection");
-            }
-        }
-
-        private void onRotateKey(KeyEventArgs e)
-        {
-            double angle;
-            if (double.TryParse(rotateBox.Text, out angle) == true)
-            {
-                RotateTransformation rt = new RotateTransformation(angle);
-                ImageSource imgSrc = rt.apply(imageCtrl.Source as BitmapSource);
-                if (imgSrc != null)
-                {
-                    _transformations.Enqueue(rt);
-                    imageCtrl.Source = imgSrc;
-                    log("Image rotated");
-                }
-            }
-            else
-            {
-                log("No rotation angle configured");
-            }
-        }
-
         private void onReloadKey()
         {
             init();
@@ -229,21 +249,10 @@ namespace PhotoBomb
             log("Reload all images");
         }
 
-        BitmapSource applyAllTransforms()
-        {
-            BitmapSource bi = getImage(_images[_imageIndex]);
-
-            foreach (PhotoTransform t in _transformations)
-            {
-                bi = t.apply(bi);
-            }
-            return bi;
-        }
-
         private void onSaveKey()
         {
             PngBitmapEncoder encoder = new PngBitmapEncoder();
-            encoder.Frames.Add(BitmapFrame.Create(applyAllTransforms()));
+            encoder.Frames.Add(BitmapFrame.Create(applyAllTransforms(PhotoTransformQuality.HI)));
 
             try
             {

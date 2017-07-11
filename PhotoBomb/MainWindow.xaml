@@ -6,7 +6,9 @@
         xmlns:local="clr-namespace:PhotoBomb"
         mc:Ignorable="d"
         Title="MainWindow" Height="350" Width="525"
-        SizeChanged="onResize">
+        SizeChanged="onResize"
+        WindowState="Maximized"
+        WindowStyle="None">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
@@ -20,7 +22,7 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
             <Label Content="Roate: " Grid.Row="0" Grid.Column="0" />
-            <TextBox Name="rotateBox" Grid.Row="0" Grid.Column="1" PreviewTextInput="NumberValidationTextBox"/>
+            <TextBox Name="rotateBox" Grid.Row="0" Grid.Column="1" PreviewTextInput="NumberValidationTextBox" Text="10"/>
         </Grid>
         <TextBox Name="outLog" IsReadOnly="True" Grid.Row="2" Grid.Column="0" ScrollViewer.VerticalScrollBarVisibility="Auto" Focusable="False"/>
         <Line Name="lineTop" Visibility="Hidden" Stroke="Red" StrokeThickness="1" />
